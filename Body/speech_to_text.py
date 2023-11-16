@@ -20,7 +20,7 @@ def speech_to_text():
             audio = recognizer.listen(source, timeout=1)
             print("Recognizing...")
 
-            text = recognizer.recognize_google(audio)
+            text = recognizer.recognize_google(audio, language='en-in')
             # print(f"You said: {text}")
             return text
 
