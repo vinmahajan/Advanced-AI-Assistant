@@ -12,10 +12,12 @@ def speech_to_text():
 
     with sr.Microphone() as source:
         recognizer.adjust_for_ambient_noise(source)
+
         print("Listening...")
 
         try:
-            audio = recognizer.listen(source, timeout=5)
+            # recognizer.pause_threshold(1)
+            audio = recognizer.listen(source, timeout=1)
             print("Recognizing...")
 
             text = recognizer.recognize_google(audio)
