@@ -1,0 +1,57 @@
+import os
+from dotenv import load_dotenv
+import requests
+import json
+
+load_dotenv() 
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+
+url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={GEMINI_API_KEY}"
+headers = {
+    'Content-Type': 'application/json'
+}
+
+def Ask_Gemini(text):
+    data = {
+        "contents": [
+            # history
+            {
+                "role": "user",
+                "parts": [
+                    {
+                        "text": text
+                    }
+                ]
+            }
+        ],
+        "systemInstruction": {
+            "role": "user",
+            "parts": [
+            {
+                "text": "Imagine you are an AI that responds like human. Keep responses brief and always in JSON format. Use the key \"Jarvis\" for your response, and if tasks are assigned, label them as \"Task1\", \"Task2\", and so on. Each task should include a sub-dictionary with \"Action\" for the task and \"ActionValue\" for its value. \nExample:\nUser command: \"Turn on the fan1 and set the speed to 4\"\nYour response: { \"Jarvis\": \"Ok, turning on the fan and setting speed to 4\", \"Task1\": {\"Action\": \"on_fan1\", \"ActionValue\": \"4\"}}"
+            }
+            ]
+        },
+        "generationConfig": {
+            "temperature": 0,
+            "topK": 64,
+            "topP": 0.95,
+            "maxOutputTokens": 8192,
+            "responseMimeType": "text/plain"
+        }
+    }
+
+    response = requests.post(url, headers=headers, data=json.dumps(data)).json()
+
+
+    text = response['candidates'][0]['content']['parts'][0]['text']
+
+    # Remove the backticks and "json" to get the actual JSON string
+    json_string = text.strip('```json\n').strip('```')
+
+    # Parse the JSON string
+    parsed_json = json.loads(json_string)
+
+    # print(parsed_json)
+
+    return parsed_json
