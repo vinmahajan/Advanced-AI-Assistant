@@ -1,65 +1,62 @@
 from AI_Brains import Google_Gemini
-import speech_recognition as sr
-import pyttsx3 
+from Body import Audio_Engine
+import json
 
-# print(Google_Gemini.Ask_Gemini("what is ohms law"))
+            
+greeting_codes = {"hey mini": "yo boss.",
+                  "hi mini": "hey boss.",
+                  "wake up mini": "i'm always up boss.",
+                  "shut up":"my apologies.",
+                  }
+
+Abort_codes ={"exit":"okay.",
+              "nothing":"no problem.",
+              "leave it":"okay, no problem.",
+              }
+
+shutdown_codes = {"shutdown":"signing off.", 
+                  "shut down":"signing off.",
+                  "power off":"signing off.",
+                  }
 
 
-# Python program to translate
-# speech to text and text to speech
+# start up greeting
+Audio_Engine.text_to_speech("Hello, I'm mini your personal AI assistant.")
 
 
-
-
-# Initialize the recognizer 
-r = sr.Recognizer() 
-
-# Function to convert text to
-# speech
-def SpeakText(command):
+while True:
+    # greet back if user greet
+    Text = Audio_Engine.SpeechRecognizer()
+    if (Text in greeting_codes.keys()):
+        print("Greetings.")
+        Audio_Engine.text_to_speech(greeting_codes[Text])
+        # listening after greeting
+        Text = Audio_Engine.SpeechRecognizer()
     
-    # Initialize the engine
-    engine = pyttsx3.init()
-    engine.say(command) 
-    engine.runAndWait()
     
+    # Aborting the current recognition
+    if(Text in Abort_codes.keys()):
+        print("Aborted.")
+        Audio_Engine.text_to_speech(Abort_codes[Text])
+        continue
     
-# Loop infinitely for user to
-# speak
+    # shut down the recognition
+    elif(Text in shutdown_codes.keys()):
+        Audio_Engine.text_to_speech(shutdown_codes[Text])
+        print("signing off")
+        break
 
-while(1):    
-    
-    # Exception handling to handle
-    # exceptions at the runtime
-    try:
+
+    # ask to AI if prompt if valid
+    elif(len(Text) > 15):
+        # ask ai  
+        response = Google_Gemini.Ask_Gemini(Text)
+        if(response["mini"]):
+            Audio_Engine.text_to_speech(response["mini"])
         
-        # use the microphone as source for input.
-        with sr.Microphone() as source2:
-            
-            # wait for a second to let the recognizer
-            # adjust the energy threshold based on
-            # the surrounding noise level 
-            # r.adjust_for_ambient_noise(source2, duration=0.2)
-            
-            #listens for the user's input
-            print("Listening...") 
-            audio2 = r.listen(source2)
-            
-            try:
-                # Using google to recognize audio
-                MyText = r.recognize_google(audio2)
-                MyText = MyText.lower()
-            except:
-                MyText = ""
-            # Activation_Prompts = ["hey mini", "hi mini", "wake up mini", "]
 
-            # if(MyText !=""):
-            if("mini" in MyText.split(" ")):
-                print(MyText)
-                # SpeakText(MyText)
+        # beta
+        # if ("Task1" in list(response.keys())):
+        #     if (response["Task1"]["Action"] in Action_list):
+        #         response["Task1"]["ActionValue"]
             
-    except sr.RequestError as e:
-        print("Could not request results format",e)
-        
-    except sr.UnknownValueError:
-        print("unknown error occurred")
