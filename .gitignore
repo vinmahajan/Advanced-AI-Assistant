@@ -1,4 +1,8 @@
-temp.ipynb
 venv
-AI_Brains/cookies
+.env
+AI_Brains/__pycache__
 AI_Brains/History
+test.ipynb
+
+
+
