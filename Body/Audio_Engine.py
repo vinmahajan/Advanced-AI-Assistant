@@ -9,16 +9,16 @@ def text_to_speech(text):
 def SpeechRecognizer():
     recognizer = sr.Recognizer()
 
+    print("Listening...")
     with sr.Microphone() as source:
         recognizer.adjust_for_ambient_noise(source)
 
         try:
-            print("Listening...")
             # recognizer.pause_threshold(1)
-            audio = recognizer.listen(source, timeout=2)
+            audio = recognizer.listen(source)
             print("Recognizing...")
 
-            text = recognizer.recognize_google(audio, language='en-in').lower()
+            text = recognizer.recognize_google(audio).lower()
             # print(f"You said: {text}")
             return text
 
@@ -27,5 +27,5 @@ def SpeechRecognizer():
         except sr.RequestError:
             print("Could not request results. Check your internet connection.")
     
-    return 0
+    return ""
 

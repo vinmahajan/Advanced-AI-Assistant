@@ -1,8 +1,9 @@
 venv
 .env
-AI_Brains/__pycache__
-AI_Brains/History
+__pycache__
+History
 test.ipynb
+Data
 
 
 

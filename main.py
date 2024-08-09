@@ -1,13 +1,18 @@
+import configparser
 from AI_Brains import Google_Gemini
 from Body import Audio_Engine
 import json
 
-            
+# reading configuration settings
+config = configparser.ConfigParser()
+config.read('config.ini')
+AI_NAME = config['DEFAULT']['AI_NAME']
+
 greeting_codes = {
-            "greeting":{
-                "hey mini": "yo boss.",
-                "hi mini": "hey boss.",
-                "wake up mini": "i'm always up boss.",
+            "Greeting":{
+                f"hey {AI_NAME}": "yo boss.",
+                f"hi {AI_NAME}": "hey boss.",
+                f"wake up {AI_NAME}": "i'm always up boss.",
                 "shut up":"my apologies.",
                 },
             "Abort" :{
@@ -15,7 +20,7 @@ greeting_codes = {
                 "nothing":"no problem.",
                 "leave it":"okay, no problem.",
                 },
-            "shutdown":{
+            "Shutdown":{
                 "shutdown":"signing off.",
                 "shut down":"signing off.",
                 "power off":"signing off.",
@@ -24,17 +29,18 @@ greeting_codes = {
 
 
 # start up greeting
-Audio_Engine.text_to_speech("Hello, I'm mini your personal AI assistant.")
+Audio_Engine.text_to_speech(f"Hello, I'm {AI_NAME} your personal AI assistant.")
 
 
 while True:
     # greet back if user greet
     Text = Audio_Engine.SpeechRecognizer()
-    if (Text in greeting_codes.keys()):
+    if (Text in greeting_codes["Greeting"].keys()):
         print("Greetings.")
-        Audio_Engine.text_to_speech(greeting_codes[Text])
+        Audio_Engine.text_to_speech(greeting_codes["Greeting"][Text])
         # listening after greeting
-        Text = Audio_Engine.SpeechRecognizer()
+        Text += " "
+        Text += Audio_Engine.SpeechRecognizer()
     
     
     # Aborting the current recognition
@@ -44,18 +50,18 @@ while True:
         continue
     
     # shut down the recognition
-    elif(Text in greeting_codes["shutdown"].keys()):
-        Audio_Engine.text_to_speech(greeting_codes["shutdown"][Text])
+    elif(Text in greeting_codes["Shutdown"].keys()):
+        Audio_Engine.text_to_speech(greeting_codes["Shutdown"][Text])
         print("signing off")
         break
 
 
     # ask to AI if prompt if valid
-    elif(len(Text) > 15):
+    elif(AI_NAME in Text and len(Text) > 15):
         # ask ai  
-        response = Google_Gemini.Ask_Gemini(Text)
-        if(response["mini"]):
-            Audio_Engine.text_to_speech(response["mini"])
+        response = Google_Gemini.Ask_Gemini(Text, AI_NAME)
+        if(len(response[AI_NAME]) > 5):
+            Audio_Engine.text_to_speech(response[AI_NAME])
         
 
         # beta
@@ -63,3 +69,5 @@ while True:
         #     if (response["Task1"]["Action"] in Action_list):
         #         response["Task1"]["ActionValue"]
             
+    elif(AI_NAME in Text and len(Text) < 15):
+        Audio_Engine.text_to_speech("sorry, i could not recognize it, please say it again.")

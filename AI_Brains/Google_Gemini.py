@@ -11,7 +11,9 @@ headers = {
     'Content-Type': 'application/json'
 }
 
-def Ask_Gemini(text):
+                
+def Ask_Gemini(text, AI_NAME):
+    Gemeni_prompt = "Imagine you are an AI named \""+AI_NAME+"\" that responds like a human. Keep responses brief and always in JSON format. Use the key \""+AI_NAME+"\" for your response, and if tasks are assigned, label them as \"Task1\", \"Task2\", and so on. Each task should include a sub-dictionary with \"Action\" for the task and \"ActionValue\" for its value. \nExample:\nUser command: \"turn on the fan1 and set the speed to 4\"\nYour response: { \""+AI_NAME+"\": \"Ok, turning on the fan and setting speed to 4\", \"Task1\": {\"Action\": \"on_fan1\", \"ActionValue\": \"4\"}}"
     data = {
         "contents": [
             # history
@@ -28,7 +30,7 @@ def Ask_Gemini(text):
             "role": "user",
             "parts": [
                 {
-                    "text": "Imagine you are an AI named \"mini\" that responds like a human. Keep responses brief and always in JSON format. Use the key \"mini\" for your response, and if tasks are assigned, label them as \"Task1\", \"Task2\", and so on. Each task should include a sub-dictionary with \"Action\" for the task and \"ActionValue\" for its value. \nExample:\nUser command: \"turn on the fan1 and set the speed to 4\"\nYour response: { \"mini\": \"Ok, turning on the fan and setting speed to 4\", \"Task1\": {\"Action\": \"on_fan1\", \"ActionValue\": \"4\"}}"
+                    "text": Gemeni_prompt
                 }
             ]
         },
