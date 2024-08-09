@@ -3,21 +3,24 @@ from Body import Audio_Engine
 import json
 
             
-greeting_codes = {"hey mini": "yo boss.",
-                  "hi mini": "hey boss.",
-                  "wake up mini": "i'm always up boss.",
-                  "shut up":"my apologies.",
-                  }
-
-Abort_codes ={"exit":"okay.",
-              "nothing":"no problem.",
-              "leave it":"okay, no problem.",
-              }
-
-shutdown_codes = {"shutdown":"signing off.", 
-                  "shut down":"signing off.",
-                  "power off":"signing off.",
-                  }
+greeting_codes = {
+            "greeting":{
+                "hey mini": "yo boss.",
+                "hi mini": "hey boss.",
+                "wake up mini": "i'm always up boss.",
+                "shut up":"my apologies.",
+                },
+            "Abort" :{
+                "exit":"okay.",
+                "nothing":"no problem.",
+                "leave it":"okay, no problem.",
+                },
+            "shutdown":{
+                "shutdown":"signing off.",
+                "shut down":"signing off.",
+                "power off":"signing off.",
+                },
+            }
 
 
 # start up greeting
@@ -35,14 +38,14 @@ while True:
     
     
     # Aborting the current recognition
-    if(Text in Abort_codes.keys()):
+    if(Text in greeting_codes["Abort"].keys()):
         print("Aborted.")
-        Audio_Engine.text_to_speech(Abort_codes[Text])
+        Audio_Engine.text_to_speech(greeting_codes["Abort"][Text])
         continue
     
     # shut down the recognition
-    elif(Text in shutdown_codes.keys()):
-        Audio_Engine.text_to_speech(shutdown_codes[Text])
+    elif(Text in greeting_codes["shutdown"].keys()):
+        Audio_Engine.text_to_speech(greeting_codes["shutdown"][Text])
         print("signing off")
         break
 
