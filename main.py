@@ -3,29 +3,24 @@ from AI_Brains import Google_Gemini
 from Body import Audio_Engine
 import json
 
-# reading configuration settings
+# reading AI name from configuration settings
 config = configparser.ConfigParser()
 config.read('config.ini')
 AI_NAME = config['DEFAULT']['AI_NAME']
 
-greeting_codes = {
-            "Greeting":{
-                f"hey {AI_NAME}": "yo boss.",
-                f"hi {AI_NAME}": "hey boss.",
-                f"wake up {AI_NAME}": "i'm always up boss.",
-                "shut up":"my apologies.",
-                },
-            "Abort" :{
-                "exit":"okay.",
-                "nothing":"no problem.",
-                "leave it":"okay, no problem.",
-                },
-            "Shutdown":{
-                "shutdown":"signing off.",
-                "shut down":"signing off.",
-                "power off":"signing off.",
-                },
-            }
+# read the greeting codes json file and replace the AI name
+def load_greeting_codes( ai_name):
+    with open("Data/Greeting_codes.json", 'r') as file:
+        greeting_codes = json.load(file)
+
+    # Replace the placeholder with the actual AI name
+    for category, phrases in greeting_codes.items():
+        greeting_codes[category] = {phrase.replace("{AI_NAME}", ai_name): response for phrase, response in phrases.items()}
+
+    return greeting_codes
+
+greeting_codes = load_greeting_codes(AI_NAME)
+
 
 
 # start up greeting

@@ -2,9 +2,10 @@ import speech_recognition as sr
 import pyttsx3
 
 def text_to_speech(text):
-    engine = pyttsx3.init()
-    engine.say(text)
-    engine.runAndWait()
+    print("Speaking: " + text)
+    # engine = pyttsx3.init()
+    # engine.say(text)
+    # engine.runAndWait()
 
 def SpeechRecognizer():
     recognizer = sr.Recognizer()
