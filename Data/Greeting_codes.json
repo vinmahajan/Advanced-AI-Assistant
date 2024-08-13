@@ -1,25 +1,25 @@
 {
     "Greeting": {
-        "hey {AI_NAME}": "yo boss.",
-        "hi {AI_NAME}": "hey boss.",
-        "hello {AI_NAME}": "hello, boss.",
-        "good morning {AI_NAME}": "good morning, boss.",
-        "good afternoon {AI_NAME}": "good afternoon, boss.",
-        "good evening {AI_NAME}": "good evening, boss.",
-        "howdy {AI_NAME}": "howdy, boss!",
-        "hey there {AI_NAME}": "hey there, boss!",
+        "hey {AI_NAME}": "yo {USER_NAME}.",
+        "hi {AI_NAME}": "hey {USER_NAME}.",
+        "hello {AI_NAME}": "hello {USER_NAME}.",
+        "good morning {AI_NAME}": "good morning {USER_NAME}.",
+        "good afternoon {AI_NAME}": "good afternoon {USER_NAME}.",
+        "good evening {AI_NAME}": "good evening {USER_NAME}.",
+        "howdy {AI_NAME}": "howdy {USER_NAME}!",
+        "hey there {AI_NAME}": "hey there {USER_NAME}!",
         "what's up {AI_NAME}": "not much, just here to help!",
-        "yo {AI_NAME}": "yo, boss!",
-        "sup {AI_NAME}": "not much, just here for you, boss!",
-        "wake up": "i'm always up boss.",
+        "yo {AI_NAME}": "yo, {USER_NAME}!",
+        "sup {AI_NAME}": "not much, just here for you {USER_NAME}!",
+        "wake up {AI_NAME}": "i'm always up {USER_NAME}.",
         "shut up": "my apologies."
     },
     "Abort": {
         "exit": "okay.",
         "nothing": "no problem.",
         "leave it": "okay, no problem.",
-        "never mind": "got it, boss.",
-        "forget it": "no worries, boss.",
+        "never mind": "got it, {USER_NAME}.",
+        "forget it": "no worries, {USER_NAME}.",
         "cancel": "consider it canceled.",
         "stop": "stopping now.",
         "abort": "aborting the task."
@@ -30,8 +30,8 @@
         "power off": "signing off.",
         "turn off": "powering down.",
         "switch off": "switching off.",
-        "goodbye": "goodbye, boss. signing off.",
-        "bye": "bye, boss. signing off.",
+        "goodbye": "goodbye, {USER_NAME}. signing off.",
+        "bye": "bye, {USER_NAME}. signing off.",
         "log out": "logging out now."
     }
 }

@@ -3,9 +3,9 @@ import pyttsx3
 
 def text_to_speech(text):
     print("Speaking: " + text)
-    # engine = pyttsx3.init()
-    # engine.say(text)
-    # engine.runAndWait()
+    engine = pyttsx3.init()
+    engine.say(text)
+    engine.runAndWait()
 
 def SpeechRecognizer():
     recognizer = sr.Recognizer()
@@ -19,14 +19,14 @@ def SpeechRecognizer():
             audio = recognizer.listen(source)
             print("Recognizing...")
 
-            text = recognizer.recognize_google(audio).lower()
+            text = recognizer.recognize_google(audio).lower().strip()
             # print(f"You said: {text}")
             return text
 
         except sr.UnknownValueError:
-            print("Could not understand the audio.")
+            print(">> Could not understand the audio.")
         except sr.RequestError:
-            print("Could not request results. Check your internet connection.")
+            print(">> Could not request results. Check your internet connection.")
     
     return ""
 

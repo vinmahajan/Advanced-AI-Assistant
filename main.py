@@ -7,19 +7,20 @@ import json
 config = configparser.ConfigParser()
 config.read('config.ini')
 AI_NAME = config['DEFAULT']['AI_NAME']
+USER_NAME = config['DEFAULT']['USER_NAME']
 
 # read the greeting codes json file and replace the AI name
-def load_greeting_codes( ai_name):
+def load_greeting_codes(ai_name, user_name):
     with open("Data/Greeting_codes.json", 'r') as file:
         greeting_codes = json.load(file)
 
     # Replace the placeholder with the actual AI name
     for category, phrases in greeting_codes.items():
-        greeting_codes[category] = {phrase.replace("{AI_NAME}", ai_name): response for phrase, response in phrases.items()}
+        greeting_codes[category] = {phrase.replace("{AI_NAME}", ai_name).replace("{USER_NAME}", user_name): response for phrase, response in phrases.items()}
 
     return greeting_codes
 
-greeting_codes = load_greeting_codes(AI_NAME)
+greeting_codes = load_greeting_codes(AI_NAME, USER_NAME)
 
 
 
@@ -28,21 +29,31 @@ Audio_Engine.text_to_speech(f"Hello, I'm {AI_NAME} your personal AI assistant.")
 
 
 while True:
+    print("loop........................................................\n")
     # greet back if user greet
     Text = Audio_Engine.SpeechRecognizer()
+    print(Text)
     if (Text in greeting_codes["Greeting"].keys()):
         print("Greetings.")
         Audio_Engine.text_to_speech(greeting_codes["Greeting"][Text])
         # listening after greeting
         Text += " "
-        Text += Audio_Engine.SpeechRecognizer()
+        print("listenning.")
+        NText = Audio_Engine.SpeechRecognizer()
+        while len(NText) < 5:
+            print(".")
+            NText = Audio_Engine.SpeechRecognizer()
+ 
+        Text += NText
+        print(Text)
+    
     
     
     # Aborting the current recognition
     if(Text in greeting_codes["Abort"].keys()):
         print("Aborted.")
         Audio_Engine.text_to_speech(greeting_codes["Abort"][Text])
-        continue
+        
     
     # shut down the recognition
     elif(Text in greeting_codes["Shutdown"].keys()):
@@ -53,10 +64,11 @@ while True:
 
     # ask to AI if prompt if valid
     elif(AI_NAME in Text and len(Text) > 15):
+        print("ask gemini",Text)
         # ask ai  
-        response = Google_Gemini.Ask_Gemini(Text, AI_NAME)
-        if(len(response[AI_NAME]) > 5):
-            Audio_Engine.text_to_speech(response[AI_NAME])
+        # response = Google_Gemini.Ask_Gemini(Text, AI_NAME)
+        # if(len(response[AI_NAME]) > 5):
+        #     Audio_Engine.text_to_speech(response[AI_NAME])
         
 
         # beta
