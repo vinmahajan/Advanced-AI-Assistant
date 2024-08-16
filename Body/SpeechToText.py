@@ -1,8 +1,5 @@
-# import os
-# import wave
 import json
 import pyaudio
-# import threading
 from vosk import Model, KaldiRecognizer
 
 

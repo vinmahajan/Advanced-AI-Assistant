@@ -1,7 +1,15 @@
 import configparser
+import time
+import threading
 from AI_Brains import Google_Gemini
-from Body import Audio_Engine
+from Body.SpeechToText import real_time_stt
+from Body.TextToSpeech import text_to_speech
+from Body import Functions
 import json
+
+
+# Create a stop event
+stop_event = threading.Event()
 
 # reading AI name from configuration settings
 config = configparser.ConfigParser()
@@ -9,62 +17,60 @@ config.read('config.ini')
 AI_NAME = config['DEFAULT']['AI_NAME']
 USER_NAME = config['DEFAULT']['USER_NAME']
 
-# read the greeting codes json file and replace the AI name
-def load_greeting_codes(ai_name, user_name):
-    with open("Data/Greeting_codes.json", 'r') as file:
-        greeting_codes = json.load(file)
+def start_thread():
+    stt_thread = threading.Thread(target=real_time_stt, args=(stop_event,))
+    stt_thread.start()
+        
+# start thread for STT
+start_thread()
 
-    # Replace the placeholder with the actual AI name
-    for category, phrases in greeting_codes.items():
-        greeting_codes[category] = {phrase.replace("{AI_NAME}", ai_name).replace("{USER_NAME}", user_name): response for phrase, response in phrases.items()}
-
-    return greeting_codes
-
-greeting_codes = load_greeting_codes(AI_NAME, USER_NAME)
-
-
+# get greeting codes
+greeting_codes = Functions.load_greeting_codes(AI_NAME, USER_NAME)
 
 # start up greeting
-Audio_Engine.text_to_speech(f"Hello, I'm {AI_NAME} your personal AI assistant.")
+text_to_speech(f"Hello, I'm {AI_NAME} your personal AI assistant.")
+
+
+# clear transcript
+Functions.transcript(method="w")
+
+
+
+
 
 
 while True:
-    print("loop........................................................\n")
-    # greet back if user greet
-    Text = Audio_Engine.SpeechRecognizer()
+    
+    # Read the transcript
+    Text = Functions.transcript(method="r")
+    # clear transcript
+    Functions.transcript(method="w")
     print(Text)
-    if (Text in greeting_codes["Greeting"].keys()):
+
+    # greet back if user greet
+    if Text in greeting_codes["Greeting"].keys():
         print("Greetings.")
-        Audio_Engine.text_to_speech(greeting_codes["Greeting"][Text])
-        # listening after greeting
-        Text += " "
-        print("listenning.")
-        NText = Audio_Engine.SpeechRecognizer()
-        while len(NText) < 5:
-            print(".")
-            NText = Audio_Engine.SpeechRecognizer()
- 
-        Text += NText
-        print(Text)
-    
-    
+        text_to_speech(greeting_codes["Greeting"][Text])
+            
     
     # Aborting the current recognition
-    if(Text in greeting_codes["Abort"].keys()):
+    elif Text in greeting_codes["Abort"].keys():
         print("Aborted.")
-        Audio_Engine.text_to_speech(greeting_codes["Abort"][Text])
-        
+        text_to_speech(greeting_codes["Abort"][Text])
+
     
     # shut down the recognition
-    elif(Text in greeting_codes["Shutdown"].keys()):
-        Audio_Engine.text_to_speech(greeting_codes["Shutdown"][Text])
+    elif Text in greeting_codes["Shutdown"].keys():
+        text_to_speech(greeting_codes["Shutdown"][Text])
+        stop_event.set()
         print("signing off")
+        Functions.shutdown_computer()
         break
 
 
     # ask to AI if prompt if valid
-    elif(AI_NAME in Text and len(Text) > 15):
-        print("ask gemini",Text)
+    elif AI_NAME in Text[0, 15] and len(Text) > 15:
+        print("ask gemini: ",Text)
         # ask ai  
         # response = Google_Gemini.Ask_Gemini(Text, AI_NAME)
         # if(len(response[AI_NAME]) > 5):
@@ -76,5 +82,5 @@ while True:
         #     if (response["Task1"]["Action"] in Action_list):
         #         response["Task1"]["ActionValue"]
             
-    elif(AI_NAME in Text and len(Text) < 15):
-        Audio_Engine.text_to_speech("sorry, i could not recognize it, please say it again.")
+    elif AI_NAME in Text and len(Text) < 15:
+        text_to_speech("sorry, i could not recognize it, please say it again.")
