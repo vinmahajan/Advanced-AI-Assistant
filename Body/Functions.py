@@ -1,5 +1,21 @@
 import json
 import os
+import socket
+
+
+def is_connected():
+  try:
+    # See if we can resolve the host name - tells us if there is
+    # A DNS listening
+    host = socket.gethostbyname("one.one.one.one")
+    # Connect to the host - tells us if the host is actually reachable
+    s = socket.create_connection((host, 80), 2)
+    s.close()
+    return True
+  except Exception:
+     pass # We ignore any errors, returning False
+  return False
+
 
 
 # read the greeting codes json file and replace the AI name
@@ -9,8 +25,8 @@ def load_greeting_codes(ai_name, user_name):
         greeting_codes = json.load(file)
 
     # Replace the placeholder with the actual AI name
-    for category, phrases in greeting_codes.items():
-        greeting_codes[category] = {phrase.replace("{AI_NAME}", ai_name): response.replace("{USER_NAME}", user_name) for phrase, response in phrases.items()}
+    # for category, phrases in greeting_codes.items():
+    #     greeting_codes[category] = {phrase.replace("{AI_NAME}", ai_name): response.replace("{USER_NAME}", user_name) for phrase, response in phrases.items()}
         
     return greeting_codes
 
@@ -24,7 +40,7 @@ def transcript(method="r", write_text=""):
                 if method == "r":
                     text = file.read()
                     if text:
-                        return text
+                        return text.lower().strip()
                     
                 # clear and write to the file
                 elif method == "w":
