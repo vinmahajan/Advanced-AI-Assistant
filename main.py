@@ -1,8 +1,11 @@
 import configparser
 import time
+import datetime
+import random
 import threading
 from AI_Brains import Google_Gemini
-from Body.SpeechToText import real_time_stt
+# from Body.SpeechToText import real_time_stt, LiveSpeechToText
+from Body.SpeechToText import LiveSpeechToText
 from Body.TextToSpeech import text_to_speech
 from Body import Functions
 import json
@@ -17,28 +20,44 @@ config.read('config.ini')
 AI_NAME = config['DEFAULT']['AI_NAME']
 USER_NAME = config['DEFAULT']['USER_NAME']
 
+
+
 def start_thread():
-    stt_thread = threading.Thread(target=real_time_stt, args=(stop_event,))
+    # stt_thread = threading.Thread(target=real_time_stt, args=(stop_event,))
+    stt_thread = threading.Thread(target=LiveSpeechToText, args=(stop_event,))
     stt_thread.start()
         
-# start thread for STT
-start_thread()
-
 # get greeting codes
 greeting_codes = Functions.load_greeting_codes(AI_NAME, USER_NAME)
 
+if not Functions.is_connected():
+    text_to_speech(random.choice(greeting_codes["offline_dlg"]))
+
+
 # start up greeting
-text_to_speech(f"Hello, I'm {AI_NAME} your personal AI assistant.")
+def Timegreet():
+    hour  = int(datetime.datetime.now().hour)
+    if hour>=0 and hour<=12:
+        text_to_speech(random.choice(greeting_codes["good_morningdlg"]))
+    elif hour >12 and hour<=18:
+        text_to_speech(random.choice(greeting_codes["good_afternoondlg"]))
+    else:
+        text_to_speech(random.choice(greeting_codes["good_eveningdlg"]))
+Timegreet()
+
+
+# start thread for STT
+start_thread()
+
+
+
+
+
+
 
 
 # clear transcript
 Functions.transcript(method="w")
-
-
-
-
-
-
 while True:
     
     # Read the transcript
@@ -54,23 +73,25 @@ while True:
             
     
     # Aborting the current recognition
-    elif Text in greeting_codes["Abort"].keys():
+    elif Text in greeting_codes["AbortCode"]:
         print("Aborted.")
-        text_to_speech(greeting_codes["Abort"][Text])
+        stop_event.set()
+        text_to_speech(random.choice(greeting_codes["AbortResponse"]))
+        exit()
 
     
     # shut down the recognition
-    elif Text in greeting_codes["Shutdown"].keys():
-        text_to_speech(greeting_codes["Shutdown"][Text])
+    elif Text in greeting_codes["ShutdownCodes"]:
+        text_to_speech(random.choice(greeting_codes["ShutdownResponse"]))
         stop_event.set()
         print("signing off")
-        Functions.shutdown_computer()
+        # Functions.shutdown_computer()
         break
 
 
     # ask to AI if prompt if valid
-    elif AI_NAME in Text[0, 15] and len(Text) > 15:
-        print("ask gemini: ",Text)
+    elif AI_NAME in Text[0:20] and len(Text) > 20:
+        print("ask AI: ",Text)
         # ask ai  
         # response = Google_Gemini.Ask_Gemini(Text, AI_NAME)
         # if(len(response[AI_NAME]) > 5):
@@ -82,5 +103,5 @@ while True:
         #     if (response["Task1"]["Action"] in Action_list):
         #         response["Task1"]["ActionValue"]
             
-    elif AI_NAME in Text and len(Text) < 15:
+    elif AI_NAME in Text and len(Text) < 20:
         text_to_speech("sorry, i could not recognize it, please say it again.")
